@@ -1,0 +1,243 @@
+/**
+ * rofi.rasi
+ * ---------------------------------------------------------------------
+ * Matches the quickshell Bar.qml / kitty.conf theme: rounded floating
+ * pill/card, soft dark base, one muted accent colour, same easing feel
+ * as the bar's popups (rounded corners, soft borders, translucent fill).
+ *
+ * PALETTE — identical to Bar.qml's header comment, so all three stay
+ * in sync. Edit @accent / @background here the same way you'd edit
+ * accentColor / bgColor in the bar's Customize popup.
+ *
+ *   background  #1e1e2e   surface    #262838   surface2  #33344a
+ *   text        #cad3f5   muted      #6e738d   accent    #8aadf4
+ *
+ * Icons: show-icons is turned on below and icon-theme is set to a
+ * common Papirus/Adwaita-style name. If your system uses a different
+ * icon theme, change icon-theme to match (`gtk-query-settings` or
+ * checking ~/.config/gtk-3.0/settings.ini will tell you which one is
+ * active) — app entries will otherwise silently fall back to a blank
+ * icon slot rather than failing.
+ *
+ * Usage:
+ *   rofi -show drun   -theme ~/.config/rofi/config.rasi   (apps)
+ *   rofi -show run     -theme ~/.config/rofi/config.rasi  (run a command)
+ *   rofi -show window  -theme ~/.config/rofi/config.rasi  (switch windows)
+ *   Bind these to keys in Hyprland, e.g.:
+ *     bind = SUPER, D, exec, rofi -show drun -theme ~/.config/rofi/config.rasi
+ * ---------------------------------------------------------------------
+ */
+
+configuration {
+    modi:                       "drun,run,window,ssh";
+    show-icons:                 true;
+    icon-theme:                 "Papirus";
+    display-drun:               " Apps";
+    display-run:                " Run";
+    display-window:             " Windows";
+    display-ssh:                "󰣀 SSH";
+    drun-display-format:        "{icon} {name}";
+    window-format:              "{w} · {c} · {t}";
+    matching:                   "fuzzy";
+    sorting-method:              "fzf";
+    case-sensitive:              false;
+    cycle:                       true;
+    scroll-method:               0;
+    click-to-exit:               true;
+    show-match:                  false;
+    disable-history:             false;
+    hover-select:                true;
+    kb-row-up:                   "Up,Control+p";
+    kb-row-down:                 "Down,Control+n";
+    kb-accept-entry:             "Return,KP_Enter";
+    kb-remove-to-eol:            "Control+k";
+}
+
+* {
+    background:         #1e1e2ee6;  /* base, ~90% opacity to match the bar's glass look */
+    background-alt:     #262838ee;
+    surface2:           #33344aff;
+    foreground:         #cad3f5ff;
+    muted:              #6e738dff;
+
+    accent:             #8aadf4ff;  /* swap this to re-theme, same as Bar.qml accentColor */
+    accent-bg:           #2b3555ff; /* muted accent fill, mirrors ACCENT_BG in Bar.qml */
+    urgent:              #ed8796ff;
+
+    background-color:   transparent;
+    text-color:          @foreground;
+
+    font: "JetBrainsMono Nerd Font 11";
+}
+
+window {
+    location:        center;
+    anchor:           center;
+    width:            640px;
+    x-offset:         0px;
+    y-offset:         0px;
+
+    background-color: @background;
+    border:           1px;
+    border-color:      @surface2;
+    border-radius:     18px;
+    padding:           16px;
+
+    /* pop-open feel to mirror the bar's popup animation intent —
+       rofi doesn't animate window geometry itself, but most
+       compositors (Hyprland incl.) will apply your window-open
+       animation rule to rofi the same as any other floating window */
+}
+
+mainbox {
+    background-color: transparent;
+    children:          [ inputbar, mode-switcher, message, listview ];
+    spacing:            12px;
+}
+
+inputbar {
+    background-color: @background-alt;
+    text-color:         @foreground;
+    border:             1px;
+    border-color:       @surface2;
+    border-radius:      12px;
+    padding:            10px 14px;
+    spacing:            10px;
+    children:           [ prompt, entry, case-indicator ];
+}
+
+prompt {
+    background-color: transparent;
+    text-color:         @accent;
+    font:               "JetBrainsMono Nerd Font Bold 11";
+}
+
+entry {
+    background-color: transparent;
+    text-color:         @foreground;
+    placeholder:        "Search…";
+    placeholder-color:  @muted;
+    cursor:              text;
+}
+
+case-indicator {
+    background-color: transparent;
+    text-color:         @muted;
+    font:               "JetBrainsMono Nerd Font 10";
+}
+
+/* ---- mode switcher: tabs for drun / run / window / ssh ---- */
+mode-switcher {
+    background-color: transparent;
+    spacing:            8px;
+}
+
+button {
+    background-color: @background-alt;
+    text-color:         @muted;
+    border-radius:      10px;
+    padding:             6px 10px;
+    horizontal-align:    0.5;
+}
+
+button selected {
+    background-color: @accent-bg;
+    text-color:         @accent;
+    border:             1px;
+    border-color:       @accent;
+}
+
+message {
+    background-color: @background-alt;
+    text-color:         @muted;
+    border-radius:      10px;
+    padding:             8px 10px;
+    border:              1px;
+    border-color:        @surface2;
+}
+
+textbox {
+    background-color: transparent;
+    text-color:         @muted;
+}
+
+listview {
+    background-color: transparent;
+    columns:            1;
+    lines:              9;
+    spacing:            4px;
+    cycle:              true;
+    dynamic:            true;
+    layout:             vertical;
+    scrollbar:          true;
+    fixed-height:       false;
+}
+
+element {
+    background-color: transparent;
+    text-color:         @foreground;
+    border-radius:      10px;
+    padding:             8px 10px;
+    spacing:             12px;
+    orientation:        horizontal;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color:         @foreground;
+}
+
+element alternate.normal {
+    background-color: transparent;
+    text-color:         @foreground;
+}
+
+/* keyboard selection AND mouse hover (hover-select is on above, so
+   hovering an entry with the mouse applies this same "selected" state) */
+element selected.normal {
+    background-color: @accent-bg;
+    text-color:         @accent;
+    border:             1px;
+    border-color:       @accent;
+}
+
+element normal.urgent, element alternate.urgent {
+    text-color:         @urgent;
+}
+
+element selected.urgent {
+    background-color: @urgent;
+    text-color:         @background;
+    border:             1px;
+    border-color:       @urgent;
+}
+
+element-icon {
+    size:               26px;
+    vertical-align:     0.5;
+    horizontal-align:   0.5;
+}
+
+element-text {
+    vertical-align:     0.5;
+    horizontal-align:   0.0;
+    text-color:          inherit;
+}
+
+/* ---- scrollbar ---- */
+scrollbar {
+    background-color: transparent;
+    handle-color:      @surface2;
+    handle-width:       6px;
+    border-radius:      3px;
+    padding:            0px 0px 0px 8px;
+}
+
+error-message {
+    background-color: @background;
+    text-color:         @urgent;
+    border:             1px;
+    border-color:       @urgent;
+    border-radius:      12px;
+    padding:             12px;
+}
